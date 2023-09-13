@@ -12,4 +12,3 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "cal-helm.selectorLabels" . | nindent 4 }}
