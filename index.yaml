@@ -1,0 +1,14 @@
+apiVersion: v1
+entries:
+  cal-helm:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2023-09-13T21:12:35.885046+02:00"
+    description: A Helm chart for Kubernetes
+    digest: 469d0bb86da2a9d716bc62ed5c833c3ab867805c0dbf521f9e2625e77654d3b5
+    name: cal-helm
+    type: application
+    urls:
+    - cal-helm-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-09-13T21:12:35.884455+02:00"
