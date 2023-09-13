@@ -1,3 +1,4 @@
+namespace: my-namespace
 env:
 - name: NEXT_PUBLIC_WEBAPP_URL
   valueFrom:
@@ -33,7 +34,7 @@ externalDatabase:
   enabled: false
   url: ''
 hpa:
-  enabled: true
+  enabled: false
   maxReplicas: 10
   minReplicas: 1
   targetCPUUtilizationPercentage: 50
@@ -54,13 +55,16 @@ ports:
 - containerPort: 7777
   name: http
 postgresql:
+  postgresUser: myuser                                                                                       
+  postgresPassword: mypassword                                                                               
+  postgresDatabase: {{ .Values.namespace }}-database
   enabled: true
   persistence:
     enabled: true
-    existingClaim: namespace-postgres
+    existingClaim: {{ .Values.namespace }}-postgres
 pvc:
   enabled: true
-  name: namespace-postgres
+  name: {{ .Values.namespace }}-postgres
   size: 1Gi
   storageClass: ''
 resources:

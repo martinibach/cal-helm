@@ -1,3 +1,4 @@
+{{- if .Values.hpa.enabled }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
@@ -7,12 +8,13 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: {{ include "cal-helm.fullname" . }}
-  minReplicas: 1
-  maxReplicas: 10
+  minReplicas: {{ .Values.hpa.minReplicas }}
+  maxReplicas: {{ .Values.hpa.maxReplicas }}
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 50
+          averageUtilization: {{ .Values.hpa.averageUtilization }}
+{{- end }}

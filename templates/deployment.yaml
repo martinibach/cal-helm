@@ -22,8 +22,14 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
-          env:
-            {{- toYaml .Values.service.env | nindent 12 }}
+             env:                                                                                                                                      
+              {{- range $key, $value := .Values.secret }}                                                                                             
+              - name: {{ $key }}                                                                                                                      
+                valueFrom:                                                                                                                            
+                  secretKeyRef:                                                                                                                       
+                    name: {{ .Values.secretName }}                                                                                                    
+                    key: {{ $key }}                                                                                                                   
+              {{- end }}  
           volumeMounts:
             {{- range .Values.service.volumes }}
             - name: {{ .name }}
