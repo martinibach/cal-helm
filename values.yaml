@@ -1,75 +1,87 @@
-service:
-  type: ClusterIP
-  port: 7777
-  image:
-    repository: calcom.docker.scarf.sh/calcom/cal.com
-    tag: latest
-    pullPolicy: IfNotPresent
-  env:
-    - name: NEXT_PUBLIC_WEBAPP_URL
-      valueFrom:
-        secretKeyRef:
-          name: calcom-secrets
-          key: NEXT_PUBLIC_WEBAPP_URL
-    - name: NEXT_PUBLIC_LICENSE_CONSENT
-      valueFrom:
-        secretKeyRef:
-          name: calcom-secrets
-          key: NEXT_PUBLIC_LICENSE_CONSENT
-    - name: CALCOM_TELEMETRY_DISABLED
-      valueFrom:
-        secretKeyRef:
-          name: calcom-secrets
-          key: CALCOM_TELEMETRY_DISABLED
-    - name: NEXTAUTH_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: calcom-secrets
-          key: NEXTAUTH_SECRET
-    - name: CALENDSO_ENCRYPTION_KEY
-      valueFrom:
-        secretKeyRef:
-          name: calcom-secrets
-          key: CALENDSO_ENCRYPTION_KEY
-    - name: DATABASE_URL
-      valueFrom:
-        secretKeyRef:
-          name: calcom-secrets
-          key: DATABASE_URL
-  volumes:
-    - name: database-data
-      path: /var/lib/postgresql/data
-  ports:
-    - name: http
-      containerPort: 7777
-pvc:
-  enabled: true
-  storageClass: ""
-  size: 1Gi
-hpa:
-  enabled: true
-  minReplicas: 1
-  maxReplicas: 10
-  targetCPUUtilizationPercentage: 50
+env:
+- name: NEXT_PUBLIC_WEBAPP_URL
+  valueFrom:
+    secretKeyRef:
+      key: NEXT_PUBLIC_WEBAPP_URL
+      name: calcom-secrets
+- name: NEXT_PUBLIC_LICENSE_CONSENT
+  valueFrom:
+    secretKeyRef:
+      key: NEXT_PUBLIC_LICENSE_CONSENT
+      name: calcom-secrets
+- name: CALCOM_TELEMETRY_DISABLED
+  valueFrom:
+    secretKeyRef:
+      key: CALCOM_TELEMETRY_DISABLED
+      name: calcom-secrets
+- name: NEXTAUTH_SECRET
+  valueFrom:
+    secretKeyRef:
+      key: NEXTAUTH_SECRET
+      name: calcom-secrets
+- name: CALENDSO_ENCRYPTION_KEY
+  valueFrom:
+    secretKeyRef:
+      key: CALENDSO_ENCRYPTION_KEY
+      name: calcom-secrets
+- name: DATABASE_URL
+  valueFrom:
+    secretKeyRef:
+      key: DATABASE_URL
+      name: calcom-secrets
 externalDatabase:
   enabled: false
-  url: ""
+  url: ''
+hpa:
+  enabled: true
+  maxReplicas: 10
+  minReplicas: 1
+  targetCPUUtilizationPercentage: 50
+image:
+  pullPolicy: IfNotPresent
+  repository: calcom.docker.scarf.sh/calcom/cal.com
+  tag: latest
 ingress:
-  enabled: false
   annotations: {}
+  enabled: false
   hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
+  - host: chart-example.local
+    paths:
+    - path: /
+      pathType: ImplementationSpecific
   tls: []
+ports:
+- containerPort: 7777
+  name: http
+postgresql:
+  enabled: true
+  persistence:
+    enabled: true
+    existingClaim: namespace-postgres
+pvc:
+  enabled: true
+  name: namespace-postgres
+  size: 1Gi
+  storageClass: ''
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 secret:
-  NEXT_PUBLIC_WEBAPP_URL: "http://localhost:3000"
-  NEXT_PUBLIC_LICENSE_CONSENT: "true"
-  CALCOM_TELEMETRY_DISABLED: "true"
-  NEXTAUTH_SECRET: "my-next-auth-secret"
-  CALENDSO_ENCRYPTION_KEY: "my-calendso-encryption-key"
-  DATABASE_URL: "postgresql://user:password@localhost:5432/mydatabase"
-
+  CALCOM_TELEMETRY_DISABLED: 'true'
+  CALENDSO_ENCRYPTION_KEY: my-calendso-encryption-key
+  DATABASE_URL: postgresql://user:password@localhost:5432/mydatabase
+  NEXTAUTH_SECRET: my-next-auth-secret
+  NEXT_PUBLIC_LICENSE_CONSENT: 'true'
+  NEXT_PUBLIC_WEBAPP_URL: http://localhost:3000
+service:
+  port: 7777
+  type: ClusterIP
 serviceAccount:
   create: true
+volumes:
+- name: database-data
+  path: /var/lib/postgresql/data
